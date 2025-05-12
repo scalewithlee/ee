@@ -18,7 +18,7 @@ This becomes tedious, especially with:
 
 ## Solution
 
-The `exp` function exports variables and immediately shows their evaluated values.
+The `ee` function exports variables and immediately shows their evaluated values.
 
 ## Installation
 
