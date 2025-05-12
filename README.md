@@ -34,16 +34,25 @@ ee() {
 
   # Process each argument
   for arg in "$@"; do
-    # Check if the argument has the format NAME=VALUE
-    if [[ "$arg" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*) ]]; then
-      varname="${BASH_REMATCH[1]}"
-      value="${BASH_REMATCH[2]}"
+    # Extract variable name (everything before the first =)
+    varname="${arg%%=*}"
 
-      # Use eval to handle complex values with quotes, command substitutions, etc.
-      eval "export $varname=$value"
+    # Check if the variable name is valid
+    if [[ ! "$varname" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+      echo "Invalid variable name: $varname"
+      echo "Variable names must start with a letter or underscore"
+      return 1
+    fi
 
-      # Get the actual value after evaluation
-      eval "echo \"$varname=\$$varname\""
+    # Extract the raw value (everything after the first =)
+    if [[ "$arg" == *"="* ]]; then
+      value="${arg#*=}"
+
+      # Export the variable
+      eval "export $varname=\"$value\""
+
+      # Echo the variable name and its value
+      eval "echo \"$varname=\${$varname}\""
     else
       echo "Invalid format for argument: $arg"
       echo "Expected format: NAME=VALUE"
